@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#111827">
+    <title>Bingo</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="topbar">
+        <div>
+            <div class="brand">🎱 BINGO</div>
+            <div id="partidaAtual" class="subtitle">Nenhuma partida aberta</div>
+        </div>
+        <button id="btnInicio" class="icon-btn" title="Início">⌂</button>
+    </header>
+
+    <main class="container">
+
+        <!-- INÍCIO -->
+        <section id="telaInicio" class="screen active">
+            <div class="hero">
+                <div class="hero-ball">75</div>
+                <h1>Controle de Bingo</h1>
+                <p>Cadastre suas cartelas e acompanhe os números sorteados.</p>
+            </div>
+
+            <button id="btnNovaPartida" class="primary-btn big">＋ Nova partida</button>
+
+            <div id="listaPartidas" class="cards-list"></div>
+        </section>
+
+        <!-- PARTIDA -->
+        <section id="telaPartida" class="screen">
+            <div class="section-head">
+                <div>
+                    <h2 id="tituloPartida">Bingo</h2>
+                    <p id="resumoPartida">0 cartelas • 0 números sorteados</p>
+                </div>
+                <button id="btnAdicionarCartela" class="primary-btn">＋ Cartela</button>
+            </div>
+
+            <div class="draw-panel">
+                <div class="last-label">ÚLTIMO NÚMERO</div>
+                <div id="ultimoNumero" class="last-number">—</div>
+                <div id="ultimoColuna" class="last-column">Aguardando sorteio</div>
+
+                <div class="number-board" id="painelNumeros"></div>
+
+                <button id="btnDesfazer" class="secondary-btn" disabled>↶ Desfazer último</button>
+            </div>
+
+            <div class="section-head cartelas-head">
+                <div>
+                    <h2>Cartelas</h2>
+                    <p>Ordenadas pela proximidade do bingo.</p>
+                </div>
+            </div>
+
+            <div id="listaCartelas" class="tickets-list"></div>
+        </section>
+
+        <!-- CADASTRO -->
+        <section id="telaCadastro" class="screen">
+            <div class="section-head">
+                <div>
+                    <h2 id="tituloCadastro">Nova cartela</h2>
+                    <p>Informe os 24 números da cartela.</p>
+                </div>
+            </div>
+
+            <label class="field-label" for="nomeCartela">Nome / identificação</label>
+            <input id="nomeCartela" class="text-input" type="text" maxlength="40"
+                   placeholder="Ex.: João, Cartela 001">
+
+            <div class="cadastro-modos">
+                <button id="btnModoManual" class="secondary-btn active" type="button">✏️ Digitar números</button>
+                <button id="btnModoFoto" class="secondary-btn" type="button">📷 Cadastrar por foto</button>
+            </div>
+
+            <div id="areaFotoCartela" class="foto-area hidden">
+                <div class="foto-instrucoes">
+                    <strong>📷 Fotografe a cartela</strong>
+                    <span>Deixe a cartela inteira visível, bem iluminada e ocupando a maior parte da foto.</span>
+                </div>
+                <label class="photo-button">📷 Tirar foto / escolher foto
+                    <input id="fotoCartela" type="file" accept="image/*" capture="environment" hidden>
+                </label>
+                <div id="previewFoto" class="preview-foto hidden"></div>
+                <div id="statusOCR" class="ocr-status hidden"></div>
+                <button id="btnReconhecerFoto" class="primary-btn hidden" type="button">🔎 Reconhecer números</button>
+                <p class="ocr-aviso">Após o reconhecimento, confira os números antes de salvar. O OCR pode confundir números em fotos ruins.</p>
+            </div>
+
+            <div class="ticket-editor-wrap">
+                <div class="ticket-grid editor" id="editorCartela"></div>
+            </div>
+
+            <div id="erroCartela" class="error-box hidden"></div>
+
+            <div class="form-actions">
+                <button id="btnCancelarCartela" class="secondary-btn">Cancelar</button>
+                <button id="btnSalvarCartela" class="primary-btn">Salvar cartela</button>
+            </div>
+        </section>
+
+        <!-- MODAL NOVA PARTIDA -->
+        <div id="modalPartida" class="modal hidden">
+            <div class="modal-box">
+                <h2>Nova partida</h2>
+                <p>Escolha um nome para identificar o bingo.</p>
+
+                <label class="field-label" for="nomePartida">Nome da partida</label>
+                <input id="nomePartida" class="text-input" type="text" maxlength="50"
+                       placeholder="Ex.: Bingo de Domingo">
+
+                <label class="field-label" for="padraoPartida">Padrão de Bingo</label>
+                <select id="padraoPartida" class="text-input">
+                    <option value="qualquer">Qualquer linha, coluna ou diagonal</option>
+                    <option value="linha">Linha horizontal</option>
+                    <option value="coluna">Coluna vertical</option>
+                    <option value="diagonal">Diagonal</option>
+                    <option value="quatro-cantos">4 cantos</option>
+                    <option value="x">X</option>
+                    <option value="cruz">Cruz (+)</option>
+                    <option value="cheia">Cartela cheia</option>
+                </select>
+                <small class="pattern-help">O padrão será definido na criação da partida e não poderá ser alterado durante o jogo.</small>
+
+                <div class="form-actions">
+                    <button id="btnFecharModal" class="secondary-btn">Cancelar</button>
+                    <button id="btnCriarPartida" class="primary-btn">Criar partida</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL BINGO -->
+        <div id="modalBingo" class="modal hidden">
+            <div class="modal-box winner-box">
+                <div class="winner-icon">🏆</div>
+                <h2>BINGO!</h2>
+                <p id="textoBingo"></p>
+                <button id="btnFecharBingo" class="primary-btn">Continuar</button>
+            </div>
+        </div>
+
+    </main>
+
+    <div id="toast" class="toast"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
